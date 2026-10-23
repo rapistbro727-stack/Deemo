@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #8b5cf6;
+      --primary-glow: rgba(139, 92, 246, 0.4);
+      --bg-color: #0b0f19;
+      --card-bg: rgba(22, 27, 46, 0.95);
+      --card-border: rgba(139, 92, 246, 0.25);
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --green: #10b981;
+      --red: #ef4444;
+      --orange: #f59e0b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+      background: var(--bg-color);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding-bottom: 75px;
+    }
+
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      height: 56px;
+      background: rgba(11, 15, 25, 0.95);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .glow-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--primary);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--primary);
+    }
+
+    .icon-action-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .content-wrapper {
+      padding: 12px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .app-view {
+      display: none;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .active-view {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .view-heading {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .pill-btn {
+      border: none;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .pill-btn.danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .pill-btn.highlight {
+      background: var(--primary-glow);
+      color: #c4b5fd;
+      border: 1px solid var(--primary);
+    }
+
+    /* Form Styles */
+    .glass-form {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .photo-dropzone {
+      display: block;
+      border: 2px dashed rgba(139, 92, 246, 0.5);
+      border-radius: 14px;
+      background: rgba(139, 92, 246, 0.04);
+      padding: 16px 10px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 14px;
+    }
+
+    .photo-dropzone input { display: none; }
+
+    .dropzone-inner p {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #c4b5fd;
+      margin-top: 6px;
+    }
+
+    .sub-hint {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+    }
+
+    .glow-icon-wrap {
+      width: 48px;
+      height: 48px;
+      background: var(--primary-glow);
+      color: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin: 0 auto;
+    }
+
+    .image-gallery-preview {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .thumb-edit-box {
+      position: relative;
+      width: 100%;
+      height: 75px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      background: #000;
+    }
+
+    .thumb-edit-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .thumb-del-btn {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 22px;
+      height: 22px;
+      background: rgba(239, 68, 68, 0.85);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 12px;
+    }
+
+    .form-inline-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .form-row label {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      font-weight: 600;
+    }
+
+    .form-row input, .form-row select, .form-row textarea {
+      background: rgba(11, 15, 25, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      padding: 11px 12px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      outline: none;
+      width: 100%;
+    }
+
+    .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 10px var(--primary-glow);
+    }
+
+    .glow-submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      margin-top: 6px;
+    }
+
+    /* Stack Lists */
+    .stack-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .order-neon-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--orange);
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .order-neon-card.Confirmed { border-left-color: var(--green); }
+    .order-neon-card.Dispatched { border-left-color: #38bdf8; }
+    .order-neon-card.Rejected, .order-neon-card.Cancelled { border-left-color: var(--red); }
+
+    .card-img-box {
+      width: 70px;
+      height: 70px;
+      flex-shrink: 0;
+      background: #000;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .card-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .card-meta-box {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .card-meta-box h4 {
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-meta-box p {
+      font-size: 0.78rem;
+      color: var(--text-sub);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .status-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      margin-top: 5px;
+    }
+
+    /* Full Phone Sized Inventory Card */
+    .inventory-full-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      margin-bottom: 6px;
+    }
+
+    .card-gallery-slider {
+      width: 100%;
+      height: 380px;
+      position: relative;
+      background: #050811;
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .card-gallery-slider::-webkit-scrollbar {
+      display: none;
+    }
+
+    .slide-item {
+      flex: 0 0 100%;
+      height: 100%;
+      scroll-snap-align: start;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #050811;
+    }
+
+    .slide-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .slider-hint-pill {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(11, 15, 25, 0.75);
+      backdrop-filter: blur(8px);
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      color: var(--text-sub);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 5;
+    }
+
+    .card-floating-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 5;
+    }
+
+    .card-floating-badge.active-st { color: var(--green); border-color: var(--green); }
+    .card-floating-badge.hidden-st { color: var(--red); border-color: var(--red); }
+
+    .card-full-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .card-title-row h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .card-pricing {
+      font-size: 1.1rem;
+      color: #a78bfa;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .card-pricing del {
+      color: var(--text-sub);
+      font-size: 0.85rem;
+      margin-left: 6px;
+    }
+
+    .card-desc-text {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+
+    .card-footer-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+    }
+
+    .stock-box-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stock-box-wrap label {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      font-weight: 600;
+    }
+
+    .stock-box-wrap input {
+      width: 75px;
+      padding: 6px 8px;
+      background: rgba(11, 15, 25, 0.8);
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      text-align: center;
+      outline: none;
+    }
+
+    .dots-menu-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .dropdown-action-menu {
+      position: absolute;
+      right: 0;
+      bottom: 50px;
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      width: 150px;
+      display: none;
+      flex-direction: column;
+      z-index: 20;
+      overflow: hidden;
+    }
+
+    .dropdown-action-menu.show-drop {
+      display: flex;
+      animation: fadeIn 0.15s ease-out;
+    }
+
+    .dropdown-action-menu button {
+      background: none;
+      border: none;
+      padding: 10px 14px;
+      text-align: left;
+      color: #f8fafc;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .dropdown-action-menu button:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .dropdown-action-menu button.del-opt {
+      color: #f87171;
+    }
+
+    /* Revenue & KPI */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .kpi-tile {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 12px;
+      border-radius: 14px;
+    }
+
+    .kpi-title { font-size: 0.75rem; color: var(--text-sub); }
+    .kpi-val { font-size: 1.3rem; color: var(--primary); margin-top: 4px; font-weight: 800; }
+
+    .insight-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 12px;
+      border-radius: 14px;
+      margin-bottom: 10px;
+    }
+
+    .insight-box h4 { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 4px; }
+    .insight-res { font-size: 0.95rem; font-weight: 700; color: #fff; }
+
+    .glow-orange { color: #fb923c; }
+    .glow-red { color: #f87171; }
+    .glow-pink { color: #f472b6; }
+
+    /* Bottom Sheet Modal */
+    .bottom-sheet-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: flex-end;
+    }
+
+    .sheet-card {
+      background: #111827;
+      border-top: 1px solid var(--card-border);
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-height: 88vh;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sheet-bar {
+      width: 40px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      margin: 0 auto 10px auto;
+    }
+
+    .sheet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .sheet-close-btn {
+      background: none;
+      border: none;
+      color: var(--text-sub);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .sheet-scrollable-content {
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Dock Navbar */
+    .dock-navbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 62px;
+      background: rgba(11, 15, 25, 0.95);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 50;
+    }
+
+    .dock-tab {
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--text-sub);
+      font-size: 0.75rem;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .dock-tab.active {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .floating-circle-btn {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      margin-top: -14px;
+      box-shadow: 0 4px 15px var(--primary-glow);
+    }
+
+    .toast {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      z-index: 200;
+      display: none;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    .spinner {
+      width: 26px;
+      height: 26px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 10px auto;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <div id="toast-box" class="toast"></div>
+
+  <header class="app-header">
+    <div class="brand-title">
+      <div class="glow-dot"></div>
+      <span id="page-title">Add Product</span>
+    </div>
+    <button id="btn-sync" class="icon-action-btn" title="Sync Data">
+      <i id="sync-icon" class="fa-solid fa-rotate"></i>
+    </button>
+  </header>
+
+  <main class="content-wrapper">
+
+    <!-- View 1: Orders -->
+    <section id="view-orders" class="app-view">
+      <div class="section-top">
+        <h2 class="view-heading">Customer Orders</h2>
+        <button id="btn-clear-history" class="pill-btn danger"><i class="fa-solid fa-trash-can"></i> Clear All</button>
+      </div>
+      <div id="orders-container" class="stack-list">
+        <div class="empty-state"><div class="spinner"></div><p>ऑर्डर्स लोड हो रहे हैं...</p></div>
+      </div>
+    </section>
+
+    <!-- View 2: Add Product (Default) -->
+    <section id="view-add" class="app-view active-view">
+      <form id="product-form" class="glass-form">
+        
+        <label class="photo-dropzone" for="file-picker">
+          <input type="file" id="file-picker" accept="image/*" multiple>
+          <div id="upload-idle" class="dropzone-inner">
+            <div class="glow-icon-wrap"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+            <p>गैलरी से 5 फोटो सेलेक्ट करें</p>
+            <span class="sub-hint">टैप करके सीधे एल्बम खोलें</span>
+          </div>
+          <div id="preview-grid" class="image-gallery-preview"></div>
+        </label>
+
+        <div class="form-row">
+          <label>Product Title</label>
+          <input type="text" id="inp-title" placeholder="उदा. Oversized T-Shirt" required>
+        </div>
+
+        <div class="form-inline-row">
+          <div class="form-row">
+            <label>Selling Price (₹)</label>
+            <input type="number" id="inp-price" placeholder="499" required>
+          </div>
+          <div class="form-row">
+            <label>Original Price (₹)</label>
+            <input type="number" id="inp-orig-price" placeholder="999">
+          </div>
+        </div>
+
+        <div class="form-inline-row">
+          <div class="form-row">
+            <label>Stock Count</label>
+            <input type="number" id="inp-stock" placeholder="10" required>
+          </div>
+          <div class="form-row">
+            <label>Available Sizes</label>
+            <input type="text" id="inp-size" placeholder="S, M, L या 7, 8, 9">
+          </div>
+        </div>
+
+        <div class="form-inline-row">
+          <div class="form-row">
+            <label>Category</label>
+            <input type="text" id="inp-category" placeholder="Clothes, Shoes">
+          </div>
+          <div class="form-row">
+            <label>Status</label>
+            <select id="inp-status">
+              <option value="Active">Active</option>
+              <option value="Hidden">Hidden</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>Description</label>
+          <textarea id="inp-desc" rows="3" placeholder="क्वालिटी, साइज चार्ट और प्रोडक्ट का विवरण..."></textarea>
+        </div>
+
+        <button type="submit" id="submit-btn" class="glow-submit-btn">
+          <span>Confirm & Add Product</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+    </section>
+
+    <!-- View 3: Menu / Inventory (Full Screen Cards) -->
+    <section id="view-menu" class="app-view">
+      <div class="section-top">
+        <h2 class="view-heading">Inventory Stock</h2>
+        <span id="items-badge" class="counter-badge">0 Items</span>
+      </div>
+      <div id="inventory-container" class="stack-list">
+        <div class="empty-state"><div class="spinner"></div><p>स्टॉक लोड हो रहा है...</p></div>
+      </div>
+    </section>
+
+    <!-- View 4: Revenue & Analytics -->
+    <section id="view-revenue" class="app-view">
+      <div class="section-top">
+        <h2 class="view-heading">Analytics & Reports</h2>
+        <button id="btn-download-csv" class="pill-btn highlight"><i class="fa-solid fa-download"></i> CSV Report</button>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-tile">
+          <span class="kpi-title">कुल कमाई</span>
+          <h3 id="kpi-rev" class="kpi-val">₹0</h3>
+        </div>
+        <div class="kpi-tile">
+          <span class="kpi-title">कुल ऑर्डर्स</span>
+          <h3 id="kpi-orders" class="kpi-val">0</h3>
+        </div>
+        <div class="kpi-tile">
+          <span class="kpi-title">कैंसिल्ड</span>
+          <h3 id="kpi-cancels" class="kpi-val">0</h3>
+        </div>
+        <div class="kpi-tile">
+          <span class="kpi-title">विशलिस्ट</span>
+          <h3 id="kpi-wishes" class="kpi-val">0</h3>
+        </div>
+      </div>
+
+      <div class="insight-box">
+        <h4><i class="fa-solid fa-fire glow-orange"></i> टॉप सेलिंग प्रोडक्ट</h4>
+        <p id="top-selling" class="insight-res">डेटा उपलब्ध नहीं है</p>
+      </div>
+
+      <div class="insight-box">
+        <h4><i class="fa-solid fa-heart-crack glow-red"></i> सबसे ज्यादा कैंसिल्ड</h4>
+        <p id="top-cancelled" class="insight-res">डेटा उपलब्ध नहीं है</p>
+      </div>
+
+      <div class="insight-box">
+        <h4><i class="fa-solid fa-heart glow-pink"></i> सबसे ज्यादा विशलिस्टेड</h4>
+        <p id="top-wishlist" class="insight-res">डेटा उपलब्ध नहीं है</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Full Detail Modal (Bottom Sheet) -->
+  <div id="modal-container" class="bottom-sheet-overlay">
+    <div class="sheet-card">
+      <div class="sheet-bar"></div>
+      <div class="sheet-header">
+        <h3 id="modal-header-text">Details</h3>
+        <button id="btn-close-modal" class="sheet-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="sheet-body" class="sheet-scrollable-content"></div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="dock-navbar">
+    <button class="dock-tab" data-target="view-orders">
+      <i class="fa-solid fa-box-archive"></i>
+      <span>Orders</span>
+    </button>
+    <button class="dock-tab active" data-target="view-add">
+      <div class="floating-circle-btn">
+        <i class="fa-solid fa-plus"></i>
+      </div>
+      <span>Add</span>
+    </button>
+    <button class="dock-tab" data-target="view-menu">
+      <i class="fa-solid fa-boxes-stacked"></i>
+      <span>Menu</span>
+    </button>
+    <button class="dock-tab" data-target="view-revenue">
+      <i class="fa-solid fa-chart-pie"></i>
+      <span>Revenue</span>
+    </button>
+  </nav>
+
+  <script>
+    const AIRTABLE_PAT = "patvZzBAkhSMWKFCF.850acdc024241824635263b56422c513ce7748be93ed99d6ce1902711d981121";
+    const BASE_ID = "appngqZpRG9aGvITI";
+    const TABLE_PRODUCT = "tblB5t7JAPnBQD7tT";
+    const TABLE_ORDER = "tblGxsOZ5TDoMYuq5";
+    const IMGBB_API_KEY = "de9993bd4f6e25eb94e5920289007082";
+
+    const AT_HEADERS = {
+      "Authorization": `Bearer ${AIRTABLE_PAT}`,
+      "Content-Type": "application/json"
+    };
+
+    let globalProducts = [];
+    let globalOrders = [];
+    let selectedAddImages = [];
+    let currentEditUrls = [];
+    let newUploadEditFiles = [];
+
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById("toast-box");
+      if (!toast) return;
+      toast.innerText = msg;
+      toast.style.borderColor = isError ? "#ef4444" : "var(--primary)";
+      toast.style.color = isError ? "#f87171" : "#c4b5fd";
+      toast.style.display = "block";
+      setTimeout(() => { toast.style.display = "none"; }, 3500);
+    }
+
+    function bindNavigationEvents() {
+      const tabs = document.querySelectorAll(".dock-tab");
+      tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+          tabs.forEach(t => t.classList.remove("active"));
+          document.querySelectorAll(".app-view").forEach(v => v.classList.remove("active-view"));
+
+          tab.classList.add("active");
+          const targetId = tab.getAttribute("data-target");
+          const targetView = document.getElementById(targetId);
+          if (targetView) targetView.classList.add("active-view");
+
+          const titles = {
+            "view-orders": "Customer Orders",
+            "view-add": "Add Product",
+            "view-menu": "Store Inventory",
+            "view-revenue": "Sales & Revenue"
+          };
+          document.getElementById("page-title").innerText = titles[targetId] || "Dashboard";
+
+          if (targetId === "view-orders") renderOrders();
+          if (targetId === "view-menu") renderInventory();
+          if (targetId === "view-revenue") renderRevenue();
+        });
+      });
+
+      const syncBtn = document.getElementById("btn-sync");
+      if (syncBtn) {
+        syncBtn.addEventListener("click", () => fetchAllData(true));
+      }
+
+      const clearBtn = document.getElementById("btn-clear-history");
+      if (clearBtn) {
+        clearBtn.addEventListener("click", clearOrdersHistory);
+      }
+
+      const csvBtn = document.getElementById("btn-download-csv");
+      if (csvBtn) {
+        csvBtn.addEventListener("click", downloadCsv);
+      }
+
+      const closeBtn = document.getElementById("btn-close-modal");
+      if (closeBtn) {
+        closeBtn.addEventListener("click", closeModal);
+      }
+
+      const modalBg = document.getElementById("modal-container");
+      if (modalBg) {
+        modalBg.addEventListener("click", (e) => {
+          if (e.target.id === "modal-container") closeModal();
+        });
+      }
+
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".dots-menu-btn") && !e.target.closest(".dropdown-action-menu")) {
+          document.querySelectorAll(".dropdown-action-menu").forEach(m => m.classList.remove("show-drop"));
+        }
+      });
+    }
+
+    function bindImagePicker() {
+      const filePicker = document.getElementById("file-picker");
+      const previewGrid = document.getElementById("preview-grid");
+      const uploadIdle = document.getElementById("upload-idle");
+
+      if (!filePicker) return;
+
+      filePicker.addEventListener("change", (e) => {
+        const files = Array.from(e.target.files).slice(0, 5);
+        selectedAddImages = files;
+        previewGrid.innerHTML = "";
+
+        if (files.length > 0) {
+          uploadIdle.style.display = "none";
+          files.forEach(f => {
+            const wrap = document.createElement("div");
+            wrap.className = "thumb-edit-box";
+            wrap.innerHTML = `<img src="${URL.createObjectURL(f)}">`;
+            previewGrid.appendChild(wrap);
+          });
+        } else {
+          uploadIdle.style.display = "block";
+        }
+      });
+    }
+
+    async function uploadToImgBB(files) {
+      const urls = [];
+      for (const f of files) {
+        const fd = new FormData();
+        fd.append("image", f);
+        try {
+          const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: fd });
+          const json = await res.json();
+          if (json && json.data && json.data.url) urls.push(json.data.url);
+        } catch (e) {
+          console.error("ImgBB Error:", e);
+        }
+      }
+      return urls;
+    }
+
+    function bindProductForm() {
+      const form = document.getElementById("product-form");
+      if (!form) return;
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById("submit-btn");
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> अपलोडिंग हो रही है...`;
+
+        try {
+          let imgUrls = [];
+          if (selectedAddImages.length > 0) {
+            imgUrls = await uploadToImgBB(selectedAddImages);
+          }
+
+          const payload = {
+            "title": document.getElementById("inp-title").value.trim(),
+            "Price": Number(document.getElementById("inp-price").value) || 0,
+            "original price": Number(document.getElementById("inp-orig-price").value) || 0,
+            "stock": Number(document.getElementById("inp-stock").value) || 0,
+            "size": document.getElementById("inp-size").value.trim(),
+            "category": document.getElementById("inp-category").value.trim(),
+            "status": document.getElementById("inp-status").value,
+            "description": document.getElementById("inp-desc").value.trim(),
+            "image": imgUrls.join(", ")
+          };
+
+          const emptyRow = globalProducts.find(p => !p.fields.title || p.fields.title.trim() === "");
+
+          let resp;
+          if (emptyRow) {
+            resp = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_PRODUCT}/${emptyRow.id}`, {
+              method: "PATCH",
+              headers: AT_HEADERS,
+              body: JSON.stringify({ fields: payload })
+            });
+          } else {
+            resp = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_PRODUCT}`, {
+              method: "POST",
+              headers: AT_HEADERS,
+              body: JSON.stringify({ fields: payload })
+            });
+          }
+
+          const resJson = await resp.json();
+          if (resJson.error) throw new Error(resJson.error.message);
+
+          showToast("प्रोडक्ट सफलतापूर्वक लाइव हो गया!");
+          form.reset();
+          document.getElementById("preview-grid").innerHTML = "";
+          document.getElementById("upload-idle").style.display = "block";
+          selectedAddImages = [];
+          fetchAllData();
+        } catch (err) {
+          showToast("Airtable Error: " + err.message, true);
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = `<span>Confirm & Add Product</span> <i class="fa-solid fa-arrow-right"></i>`;
+        }
+      });
+    }
+
+    async function fetchAllData(isManual = false) {
+      const syncIcon = document.getElementById("sync-icon");
+      if (syncIcon) syncIcon.classList.add("fa-spin");
+
+      try {
+        const [pRes, oRes] = await Promise.all([
+          fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_PRODUCT}`, { headers: AT_HEADERS }),
+          fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_ORDER}`, { headers: AT_HEADERS })
+        ]);
+
+        const pData = await pRes.json();
+        const oData = await oRes.json();
+
+        if (pData.error) throw new Error("Product: " + pData.error.message);
+        if (oData.error) throw new Error("Order: " + oData.error.message);
+
+        globalProducts = pData.records || [];
+        globalOrders = oData.records || [];
+
+        const activeTab = document.querySelector(".dock-tab.active");
+        if (activeTab) {
+          const activeId = activeTab.getAttribute("data-target");
+          if (activeId === "view-orders") renderOrders();
+          if (activeId === "view-menu") renderInventory();
+          if (activeId === "view-revenue") renderRevenue();
+        }
+
+        if (isManual) showToast("डेटा सिंक हो गया!");
+      } catch (err) {
+        showToast("डेटा फेच एरर: " + err.message, true);
+      } finally {
+        if (syncIcon) syncIcon.classList.remove("fa-spin");
+      }
+    }
+
+    // ==========================================
+    // 7. Orders View
+    // ==========================================
+    function renderOrders() {
+      const container = document.getElementById("orders-container");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const validOrders = globalOrders.filter(o => !o.fields.whislist && o.fields["customer name"]);
+
+      if (validOrders.length === 0) {
+        container.innerHTML = `<p style="text-align:center; color:#64748b; padding:30px;">कोई आर्डर नहीं मिला</p>`;
+        return;
+      }
+
+      validOrders.forEach(ord => {
+        const f = ord.fields;
+        const card = document.createElement("div");
+        const status = f["oder status"] || "Pending";
+        card.className = `order-neon-card ${status}`;
+
+        const prod = globalProducts.find(p => p.fields.title === f.product);
+        let img = "https://via.placeholder.com/80?text=No+Img";
+        if (prod && prod.fields.image) img = prod.fields.image.split(",")[0].trim();
+
+        card.innerHTML = `
+          <div class="card-img-box"><img src="${img}"></div>
+          <div class="card-meta-box">
+            <h4>${f.product || 'Order'}</h4>
+            <p><strong>नाम:</strong> ${f["customer name"]}</p>
+            <p><strong>फोन:</strong> ${f.phone}</p>
+            <p><strong>पता:</strong> ${f.adress || 'N/A'}</p>
+            <span class="status-badge">${status}</span>
+          </div>
+        `;
+        card.addEventListener("click", () => openOrderDetail(ord, prod));
+        container.appendChild(card);
+      });
+    }
+
+    function openOrderDetail(ord, prod) {
+      const f = ord.fields;
+      const sheet = document.getElementById("sheet-body");
+      document.getElementById("modal-header-text").innerText = "Order Details";
+
+      let gallery = `<p style="color:#64748b;">फोटो उपलब्ध नहीं है</p>`;
+      if (prod && prod.fields.image) {
+        const imgs = prod.fields.image.split(",");
+        gallery = `<div class="card-gallery-slider" style="height:220px; border-radius:12px; margin-bottom:12px;">
+          ${imgs.map(u => `<div class="slide-item"><img src="${u.trim()}"></div>`).join("")}
+        </div>`;
+      }
+
+      sheet.innerHTML = `
+        ${gallery}
+        <h3 style="margin-top:6px;">${f.product}</h3>
+        <p style="font-size:0.85rem; color:var(--text-sub);">${prod ? (prod.fields.description || '') : ''}</p>
+
+        <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:10px; font-size:0.85rem;">
+          <p><strong>साइज़:</strong> ${f["size select"] || 'N/A'}</p>
+          <p><strong>बिल:</strong> ₹${f["total amount"] || 0}</p>
+          <p><strong>ग्राहक:</strong> ${f["customer name"]}</p>
+          <p><strong>फोन:</strong> <a href="tel:${f.phone}" style="color:#38bdf8;">${f.phone}</a> | <a href="https://wa.me/${f.phone}" target="_blank" style="color:#34d399;">WhatsApp</a></p>
+          <p><strong>पता:</strong> ${f.adress || 'N/A'}</p>
+        </div>
+
+        <div class="form-row">
+          <label>Speed Post Tracking ID</label>
+          <input type="text" id="tracking-input" value="${f["tracking ID"] || ''}" placeholder="उदा. ED123456789IN">
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button class="pill-btn" style="flex:1; background:var(--green); color:white;" id="btn-modal-confirm">Confirm</button>
+          <button class="pill-btn danger" style="flex:1;" id="btn-modal-reject">Reject</button>
+          <button class="pill-btn highlight" style="flex:1;" id="btn-modal-dispatch">Dispatch</button>
+        </div>
+      `;
+
+      document.getElementById("btn-modal-confirm").onclick = () => updateOrderStatus(ord, prod, "Confirmed");
+      document.getElementById("btn-modal-reject").onclick = () => updateOrderStatus(ord, prod, "Rejected");
+      document.getElementById("btn-modal-dispatch").onclick = () => {
+        const trId = document.getElementById("tracking-input").value.trim();
+        updateOrderStatus(ord, prod, "Dispatched", trId);
+      };
+
+      document.getElementById("modal-container").style.display = "flex";
+    }
+
+    function closeModal() {
+      const modal = document.getElementById("modal-container");
+      if (modal) modal.style.display = "none";
+    }
+
+    // ऑटो स्टॉक घटना और बढ़ना (रियल टाइम)
+    async function updateOrderStatus(ord, prod, status, trackingId = null) {
+      const oldStatus = ord.fields["oder status"] || "Pending";
+      const fields = { "oder status": status };
+      if (trackingId !== null) fields["tracking ID"] = trackingId;
+
+      try {
+        // 1. अगर ऑर्डर कंफर्म हुआ तो स्टॉक 1 माइनस होगा
+        if (prod && status === "Confirmed" && oldStatus !== "Confirmed") {
+          const newStock = Math.max(0, (prod.fields.stock || 0) - 1);
+          await updateProductField(prod.id, { "stock": newStock });
+        }
+        // 2. अगर कैंसिल/रिजेक्ट हुआ और पहले कंफर्म था, तो स्टॉक 1 वापस जुड़ जाएगा
+        if (prod && (status === "Rejected" || status === "Cancelled") && oldStatus === "Confirmed") {
+          const newStock = (prod.fields.stock || 0) + 1;
+          await updateProductField(prod.id, { "stock": newStock });
+        }
+
+        await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_ORDER}/${ord.id}`, {
+          method: "PATCH",
+          headers: AT_HEADERS,
+          body: JSON.stringify({ fields })
+        });
+
+        closeModal();
+        showToast(`ऑर्डर ${status} मार्क हो गया!`);
+        fetchAllData();
+      } catch (err) {
+        showToast("एरर: " + err.message, true);
+      }
+    }
+
+    // ==========================================
+    // 8. Inventory View (Full Phone Cards + Horizontal Swipe)
+    // ==========================================
+    function renderInventory() {
+      const container = document.getElementById("inventory-container");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const validProducts = globalProducts.filter(p => p.fields.title);
+      document.getElementById("items-badge").innerText = `${validProducts.length} Items`;
+
+      if (validProducts.length === 0) {
+        container.innerHTML = `<p style="text-align:center; color:#64748b; padding:30px;">इन्वेंटरी में कोई सामान नहीं है</p>`;
+        return;
+      }
+
+      validProducts.forEach(p => {
+        const f = p.fields;
+        const card = document.createElement("div");
+        card.className = "inventory-full-card";
+
+        const isHidden = (f.status === "Hidden");
+        const imgUrls = f.image ? f.image.split(",").map(u => u.trim()).filter(Boolean) : [];
+
+        let sliderHtml = "";
+        if (imgUrls.length > 0) {
+          sliderHtml = `
+            <div class="card-gallery-slider">
+              ${imgUrls.map(u => `<div class="slide-item"><img src="${u}"></div>`).join("")}
+            </div>
+            ${imgUrls.length > 1 ? `<div class="slider-hint-pill"><i class="fa-solid fa-arrows-left-right"></i> ${imgUrls.length} Photos</div>` : ''}
+          `;
+        } else {
+          sliderHtml = `
+            <div class="card-gallery-slider">
+              <div class="slide-item"><img src="https://via.placeholder.com/400x500?text=No+Photo"></div>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div style="position:relative;">
+            ${sliderHtml}
+            <div class="card-floating-badge ${isHidden ? 'hidden-st' : 'active-st'}">
+              ${isHidden ? 'Hidden' : 'Active'}
+            </div>
+          </div>
+          
+          <div class="card-full-body">
+            <div class="card-title-row">
+              <div>
+                <h3>${f.title}</h3>
+                <div class="card-pricing">
+                  ₹${f.Price} ${f["original price"] ? `<del>₹${f["original price"]}</del>` : ''}
+                </div>
+              </div>
+              <span style="font-size:0.75rem; background:rgba(255,255,255,0.06); padding:4px 8px; border-radius:6px; color:#c4b5fd;">
+                ${f.size || 'No Size'}
+              </span>
+            </div>
+
+            <p class="card-desc-text">${f.description || 'कोई विवरण नहीं'}</p>
+
+            <div class="card-footer-controls">
+              <div class="stock-box-wrap">
+                <label>स्टॉक:</label>
+                <input type="number" class="direct-stock-inp" value="${f.stock || 0}">
+              </div>
+
+              <div style="position:relative;">
+                <button class="dots-menu-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                <div class="dropdown-action-menu">
+                  <button class="toggle-hide-opt">
+                    <i class="fa-solid ${isHidden ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                    <span>${isHidden ? 'Unhide' : 'Hide'}</span>
+                  </button>
+                  <button class="edit-prod-opt">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>Edit (री-चेंज)</span>
+                  </button>
+                  <button class="del-opt">
+                    <i class="fa-solid fa-trash-can"></i>
+                    <span>Delete</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        const stockInput = card.querySelector(".direct-stock-inp");
+        stockInput.addEventListener("change", async () => {
+          const val = Math.max(0, parseInt(stockInput.value) || 0);
+          stockInput.disabled = true;
+          await updateProductField(p.id, { "stock": val });
+          showToast(`स्टॉक अपडेट हो गया: ${val}`);
+          stockInput.disabled = false;
+        });
+
+        const dotsBtn = card.querySelector(".dots-menu-btn");
+        const dropMenu = card.querySelector(".dropdown-action-menu");
+        dotsBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          document.querySelectorAll(".dropdown-action-menu").forEach(m => {
+            if (m !== dropMenu) m.classList.remove("show-drop");
+          });
+          dropMenu.classList.toggle("show-drop");
+        });
+
+        card.querySelector(".toggle-hide-opt").onclick = async () => {
+          dropMenu.classList.remove("show-drop");
+          const nextStatus = isHidden ? "Active" : "Hidden";
+          await updateProductField(p.id, { "status": nextStatus });
+          showToast(`प्रोडक्ट ${nextStatus} कर दिया गया!`);
+          fetchAllData();
+        };
+
+        card.querySelector(".edit-prod-opt").onclick = () => {
+          dropMenu.classList.remove("show-drop");
+          openProductEditModal(p);
+        };
+
+        card.querySelector(".del-opt").onclick = () => {
+          dropMenu.classList.remove("show-drop");
+          deleteProduct(p.id);
+        };
+
+        container.appendChild(card);
+      });
+    }
+
+    async function updateProductField(id, fields) {
+      await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_PRODUCT}/${id}`, {
+        method: "PATCH",
+        headers: AT_HEADERS,
+        body: JSON.stringify({ fields })
+      });
+    }
+
+    // ==========================================
+    // 9. RE-CHANGE / EDIT MODAL WITH PHOTO DELETE CORNER BUTTON
+    // ==========================================
+    function openProductEditModal(prod) {
+      const f = prod.fields;
+      const sheet = document.getElementById("sheet-body");
+      document.getElementById("modal-header-text").innerText = "Edit Product (री-चेंज)";
+
+      currentEditUrls = f.image ? f.image.split(",").map(u => u.trim()).filter(Boolean) : [];
+      newUploadEditFiles = [];
+
+      function renderEditGallery() {
+        const container = document.getElementById("edit-preview-grid");
+        if (!container) return;
+        container.innerHTML = "";
+
+        // पुरानी मौजूद इमेजेस (Cross Icon के साथ)
+        currentEditUrls.forEach((url, idx) => {
+          const wrap = document.createElement("div");
+          wrap.className = "thumb-edit-box";
+          wrap.innerHTML = `
+            <img src="${url}">
+            <button class="thumb-del-btn" title="फोटो हटाएं"><i class="fa-solid fa-xmark"></i></button>
+          `;
+          wrap.querySelector(".thumb-del-btn").onclick = () => {
+            currentEditUrls.splice(idx, 1);
+            renderEditGallery();
+          };
+          container.appendChild(wrap);
+        });
+
+        // नई सेलेक्ट की गई इमेजेस (Cross Icon के साथ)
+        newUploadEditFiles.forEach((file, idx) => {
+          const wrap = document.createElement("div");
+          wrap.className = "thumb-edit-box";
+          wrap.innerHTML = `
+            <img src="${URL.createObjectURL(file)}">
+            <button class="thumb-del-btn" title="फोटो हटाएं"><i class="fa-solid fa-xmark"></i></button>
+          `;
+          wrap.querySelector(".thumb-del-btn").onclick = () => {
+            newUploadEditFiles.splice(idx, 1);
+            renderEditGallery();
+          };
+          container.appendChild(wrap);
+        });
+      }
+
+      sheet.innerHTML = `
+        <div class="form-row">
+          <label>Photos (ऊपर कोने के X बटन से फोटो हटाएं या नीचे से और जोड़ें)</label>
+          <div id="edit-preview-grid" class="image-gallery-preview" style="margin-bottom:10px;"></div>
+          
+          <label class="photo-dropzone" for="edit-more-files" style="padding:10px; margin-bottom:4px;">
+            <input type="file" id="edit-more-files" accept="image/*" multiple>
+            <div class="dropzone-inner">
+              <p style="font-size:0.85rem;"><i class="fa-solid fa-circle-plus"></i> एल्बम से और फोटो जोड़ें</p>
+            </div>
+          </label>
+        </div>
+
+        <div class="form-row">
+          <label>Product Title</label>
+          <input type="text" id="edit-title" value="${f.title || ''}">
+        </div>
+
+        <div class="form-inline-row">
+          <div class="form-row">
+            <label>Selling Price (₹)</label>
+            <input type="number" id="edit-price" value="${f.Price || 0}">
+          </div>
+          <div class="form-row">
+            <label>Original Price (₹)</label>
+            <input type="number" id="edit-orig-price" value="${f["original price"] || 0}">
+          </div>
+        </div>
+
+        <div class="form-inline-row">
+          <div class="form-row">
+            <label>Stock Count</label>
+            <input type="number" id="edit-stock" value="${f.stock || 0}">
+          </div>
+          <div class="form-row">
+            <label>Sizes</label>
+            <input type="text" id="edit-size" value="${f.size || ''}">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>Description</label>
+          <textarea id="edit-desc" rows="3">${f.description || ''}</textarea>
+        </div>
+
+        <button id="save-edit-btn" class="glow-submit-btn" style="margin-top:8px;">
+          <i class="fa-solid fa-floppy-disk"></i> Save & Update (उसी रो में सेव करें)
+        </button>
+      `;
+
+      renderEditGallery();
+
+      document.getElementById("edit-more-files").onchange = (e) => {
+        const added = Array.from(e.target.files);
+        newUploadEditFiles = newUploadEditFiles.concat(added);
+        renderEditGallery();
+      };
+
+      document.getElementById("save-edit-btn").onclick = async () => {
+        const btn = document.getElementById("save-edit-btn");
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> अपडेटिंग हो रही है...`;
+
+        try {
+          let newlyUploadedUrls = [];
+          if (newUploadEditFiles.length > 0) {
+            newlyUploadedUrls = await uploadToImgBB(newUploadEditFiles);
+          }
+
+          const finalImgList = currentEditUrls.concat(newlyUploadedUrls);
+
+          const patchPayload = {
+            "title": document.getElementById("edit-title").value.trim(),
+            "Price": Number(document.getElementById("edit-price").value) || 0,
+            "original price": Number(document.getElementById("edit-orig-price").value) || 0,
+            "stock": Number(document.getElementById("edit-stock").value) || 0,
+            "size": document.getElementById("edit-size").value.trim(),
+            "description": document.getElementById("edit-desc").value.trim(),
+            "image": finalImgList.join(", ")
+          };
+
+          await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_PRODUCT}/${prod.id}`, {
+            method: "PATCH",
+            headers: AT_HEADERS,
+            body: JSON.stringify({ fields: patchPayload })
+          });
+
+          closeModal();
+          showToast("प्रोडक्ट सफलतापूर्वक अपडेट हो गया!");
+          fetchAllData();
+        } catch (err) {
+          showToast("एडिट एरर: " + err.message, true);
+        } finally {
+          btn.disabled = false;
+        }
+      };
+
+      document.getElementById("modal-container").style.display = "flex";
+    }
+
+    async function deleteProduct(id) {
+      if (!confirm("क्या आप इसे डिलीट करना चाहते हैं?")) return;
+      await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_PRODUCT}/${id}`, {
+        method: "DELETE",
+        headers: AT_HEADERS
+      });
+      showToast("प्रोडक्ट डिलीट हो गया!");
+      fetchAllData();
+    }
+
+    // ==========================================
+    // 10. Revenue View
+    // ==========================================
+    function renderRevenue() {
+      const orders = globalOrders.filter(o => !o.fields.whislist && o.fields["customer name"]);
+      const wishes = globalOrders.filter(o => o.fields.whislist);
+
+      let total = 0;
+      let cancels = 0;
+      const pSales = {}, pCancels = {}, pWishes = {};
+
+      orders.forEach(o => {
+        const amt = Number(o.fields["total amount"]) || 0;
+        const st = o.fields["oder status"];
+        const name = o.fields.product || "Unknown";
+
+        if (st === "Cancelled" || st === "Rejected") {
+          cancels++;
+          pCancels[name] = (pCancels[name] || 0) + 1;
+        } else {
+          total += amt;
+          pSales[name] = (pSales[name] || 0) + 1;
+        }
+      });
+
+      wishes.forEach(w => {
+        const name = w.fields.product || "Unknown";
+        pWishes[name] = (pWishes[name] || 0) + 1;
+      });
+
+      document.getElementById("kpi-rev").innerText = `₹${total}`;
+      document.getElementById("kpi-orders").innerText = orders.length;
+      document.getElementById("kpi-cancels").innerText = cancels;
+      document.getElementById("kpi-wishes").innerText = wishes.length;
+
+      const topKey = obj => Object.keys(obj).reduce((a, b) => obj[a] > obj[b] ? a : b, "डेटा उपलब्ध नहीं है");
+      document.getElementById("top-selling").innerText = Object.keys(pSales).length ? topKey(pSales) : "डेटा उपलब्ध नहीं है";
+      document.getElementById("top-cancelled").innerText = Object.keys(pCancels).length ? topKey(pCancels) : "डेटा उपलब्ध नहीं है";
+      document.getElementById("top-wishlist").innerText = Object.keys(pWishes).length ? topKey(pWishes) : "डेटा उपलब्ध नहीं है";
+    }
+
+    async function clearOrdersHistory() {
+      if (!confirm("क्या आप वाकई सभी ऑर्डर्स डिलीट करना चाहते हैं?")) return;
+      for (const o of globalOrders) {
+        await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_ORDER}/${o.id}`, { method: "DELETE", headers: AT_HEADERS });
+      }
+      showToast("सभी ऑर्डर्स डिलीट हो गए!");
+      fetchAllData();
+    }
+
+    function downloadCsv() {
+      let csv = "Order ID,Customer Name,Phone,Address,Product,Amount,Status,Tracking ID\n";
+      globalOrders.forEach(o => {
+        const f = o.fields;
+        csv += `"${f.order || ''}","${f["customer name"] || ''}","${f.phone || ''}","${f.adress || ''}","${f.product || ''}","${f["total amount"] || 0}","${f["oder status"] || ''}","${f["tracking ID"] || ''}"\n`;
+      });
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `Sales_Report_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      bindNavigationEvents();
+      bindImagePicker();
+      bindProductForm();
+      fetchAllData();
+    });
+  </script>
+</body>
+</html>
